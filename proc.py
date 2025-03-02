@@ -8,9 +8,9 @@ def get_processes():
         'pid,user,%cpu,%mem,args',  # Select columns: PID, USER, %CPU, %MEM, COMMAND
     ]
     try:
-        output = subprocess.check_output(ps_command, text=True)
+        output = subprocess.check_output(ps_command, universal_newlines=True)
     except subprocess.CalledProcessError as e:
-        print(f"Error executing ps command: {e}")
+        print("Error executing ps command: {}".format(e))
         return []
 
     lines = output.splitlines()
@@ -39,12 +39,18 @@ def get_processes():
     return processes
 
 def print_processes(processes, sort_key, title):
-    print(f"\n{'=' * 40}")
-    print(f"Processes sorted by {title} (descending)")
-    print(f"{'=' * 40}")
-    print(f"{'PID':>7} {'USER':<10} {'CPU%':>6} {'MEM%':>6} COMMAND")
+    print("\n{}".format('=' * 40))
+    print("Processes sorted by {} (descending)".format(title))
+    print("{}".format('=' * 40))
+    print("{:>7} {:<10} {:>6} {:>6} COMMAND".format('PID', 'USER', 'CPU%', 'MEM%'))
     for p in processes:
-        print(f"{p['pid']:>7} {p['user']:<10} {p[sort_key]:>6.1f}% {p['mem']:>6.1f}% {p['cmd'][:80]}")
+        print("{:>7} {:<10} {:6.1f}% {:6.1f}% {}".format(
+            p['pid'], 
+            p['user'], 
+            p[sort_key], 
+            p['mem'], 
+            p['cmd'][:80]
+        ))
 
 def main():
     processes = get_processes()
